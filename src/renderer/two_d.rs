@@ -39,6 +39,12 @@ impl Renderer {
             anti_aliasing: false,
         }
     }
+    pub fn window_width(&self) -> usize {
+        self.buffer.width()
+    }
+    pub fn window_height(&self) -> usize {
+        self.buffer.height()
+    }
 
     pub fn set_fill<C: Into<Color> + Copy>(&mut self, fill: C) {
         self.fill = fill.into();

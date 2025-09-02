@@ -1,5 +1,18 @@
 const FULL_CIRCLE_DEG: f32 = 360.0;
 
+#[macro_export]
+macro_rules! min {
+    ($a:expr, $b:expr) => {
+        $a.min($b)
+    };
+}
+#[macro_export]
+macro_rules! max {
+    ($a:expr, $b:expr) => {
+        $a.max($b)
+    };
+}
+
 pub fn wrap_degrees_360(angle: f32) -> f32 {
     ((angle % FULL_CIRCLE_DEG) + FULL_CIRCLE_DEG) % FULL_CIRCLE_DEG
 }

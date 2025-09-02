@@ -7,10 +7,20 @@ pub fn top_left_line(p1: &mut VX2, p2: &mut VX2) {
     }
 }
 
+pub trait BBox2d {
+    fn bbox(&self) -> Bounds;
+}
+
+pub struct Bounds {
+    pub min_x: f32,
+    pub max_x: f32,
+    pub min_y: f32,
+    pub max_y: f32,
+}
+
 #[cfg(test)]
 mod test {
     use crate::{objects::utils::top_left_line, vx2};
-
 
     #[test]
     fn swapping() {
@@ -20,5 +30,4 @@ mod test {
         top_left_line(&mut p1, &mut p2);
         println!("{p1:?}, {p2:?}");
     }
-
 }
