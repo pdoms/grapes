@@ -1,0 +1,7 @@
+pub const DEFAULT_WIDTH_U32: u32 = 600;
+pub const DEFAULT_HEIGHT_U32: u32 = 400;
+pub const DEFAULT_WIDTH_F32: f32 = 600.0;
+pub const DEFAULT_HEIGHT_F32: f32 = 400.0;
+pub const DEFAULT_BACKGROUND: u32 = 0xFF222222;
+pub const DEFAULT_FOREGROUND: u32 = 0xFFFFFFEE;
+pub const DEFAULT_FPS: usize = 60;
