@@ -29,6 +29,15 @@ impl Color {
     pub fn a(&self) -> u8 {
         self.a
     }
+    pub fn set_r(&mut self, r: u8) {
+        self.r = r;
+    }
+    pub fn set_g(&mut self, g: u8) {
+        self.g = g;
+    }
+    pub fn set_b(&mut self, b: u8) {
+        self.b = b;
+    }
 
     pub fn set_alpha(&mut self, a: u8) {
         self.a = a;
@@ -62,6 +71,14 @@ impl Color {
             g: (self.g as f32 * (1.0 - lum)) as u8,
             b: (self.b as f32 * (1.0 - lum)) as u8,
             a: self.a,
+        }
+    }
+    pub fn lerp(start: &Self, end: &Self, t: f32) -> Self {
+        Color {
+            r: (start.r as f32 * (1.0 - t) + end.r as f32 * t) as u8,
+            g: (start.g as f32 * (1.0 - t) + end.g as f32 * t) as u8,
+            b: (start.b as f32 * (1.0 - t) + end.b as f32 * t) as u8,
+            a: 0xFF,
         }
     }
 }
