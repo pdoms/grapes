@@ -10,7 +10,7 @@ macro_rules! vx2 {
     };
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct VX2 {
     pub x: f32,
     pub y: f32,

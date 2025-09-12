@@ -17,6 +17,10 @@ pub fn wrap_degrees_360(angle: f32) -> f32 {
     ((angle % FULL_CIRCLE_DEG) + FULL_CIRCLE_DEG) % FULL_CIRCLE_DEG
 }
 
+pub fn lerp(a: f32, b: f32, t: f32) -> f32 {
+    a + (b - a) * t
+}
+
 #[cfg(test)]
 mod test {
     use crate::utils::wrap_degrees_360;

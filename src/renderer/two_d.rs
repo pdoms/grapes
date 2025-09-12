@@ -15,10 +15,10 @@ pub trait Render {
     fn fill_rendderer(&self, _renderer: &mut Renderer) {
         unimplemented!("Default unimplemented for fill_renderer");
     }
-    fn draw_clr<C: Into<Color> + Copy>(&self, _renderer: &mut Renderer, _c: C) {
+    fn draw_clr<C: Into<u32> + Copy>(&self, _renderer: &mut Renderer, _c: C) {
         unimplemented!("Default unimplemented for draw_clr");
     }
-    fn fill_clr<C: Into<Color> + Copy>(&self, _renderer: &mut Renderer, _c: C) {
+    fn fill_clr<C: Into<u32> + Copy>(&self, _renderer: &mut Renderer, _c: C) {
         unimplemented!("Default unimplemented for fill_clr");
     }
 }
@@ -33,17 +33,17 @@ pub struct Renderer {
 impl Renderer {
     pub fn new(width: usize, height: usize) -> Self {
         Self {
-            buffer: Buffer::init(width, height),
+            buffer: Buffer::init(width as i32, height as i32),
             fill: DEFAULT_FOREGROUND.into(),
             stroke: DEFAULT_FOREGROUND.into(),
             anti_aliasing: false,
         }
     }
     pub fn window_width(&self) -> usize {
-        self.buffer.width()
+        self.buffer.width() as usize
     }
     pub fn window_height(&self) -> usize {
-        self.buffer.height()
+        self.buffer.height() as usize
     }
 
     pub fn set_fill<C: Into<Color> + Copy>(&mut self, fill: C) {

@@ -59,9 +59,8 @@ impl Render for Line2d {
             bresenham(renderer.buffer_mut(), &self.p1, &self.p2, clr.into());
         }
     }
-    fn draw_clr<C: Into<Color> + Copy>(&self, renderer: &mut Renderer, c: C) {
-        let clr: Color = c.into();
-        bresenham(renderer.buffer_mut(), &self.p1, &self.p2, clr.into());
+    fn draw_clr<C: Into<u32> + Copy>(&self, renderer: &mut Renderer, c: C) {
+        bresenham(renderer.buffer_mut(), &self.p1, &self.p2, c.into());
     }
 
     fn draw_renderer(&self, renderer: &mut Renderer) {
@@ -127,12 +126,12 @@ pub fn bresenham(buffer: &mut Buffer<u32>, p1: &VX2, p2: &VX2, clr: u32) {
     let mut y = y0;
 
     for x in x0.round() as usize..=x1.round() as usize {
-        let i_y = y.round() as usize;
+        let i_y = y.round() as i32;
 
         if steep {
-            buffer.set_xy(i_y as usize, x as usize, clr); //swapped back
+            buffer.set_xy(i_y, x as i32, clr); //swapped back
         } else {
-            buffer.set_xy(x as usize, i_y as usize, clr);
+            buffer.set_xy(x as i32, i_y, clr);
         }
         err -= dy;
         if err < 0.0 {

@@ -18,6 +18,10 @@ pub struct Bounds {
     pub max_y: f32,
 }
 
+pub fn edge_2d(a: &VX2, b: &VX2, c: &VX2) -> f32 {
+    (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
+}
+
 #[cfg(test)]
 mod test {
     use crate::{objects::utils::top_left_line, vx2};

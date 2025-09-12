@@ -64,9 +64,9 @@ impl<S: State> Engine<S> {
             let buf = self.renderer.buffer();
             self.w.update_with_buffer_stride(
                 buf.as_slice(),
-                buf.width(),
-                buf.height(),
-                buf.width(),
+                buf.width() as usize,
+                buf.height() as usize,
+                buf.width() as usize,
             )?;
         }
         Ok(())
