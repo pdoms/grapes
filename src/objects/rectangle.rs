@@ -1,12 +1,12 @@
 use crate::{
     colors::color::Color,
     constants::DEFAULT_FOREGROUND,
-    linal::vx2::{self, VX2},
+    linal::vertx2::VX2,
     renderer::two_d::{Render, Renderer},
     vx2,
 };
 
-use super::{line::bresenham, tri::Tri2d};
+use super::{line::bresenham, tri::Tri2d, Collision, Vertices};
 
 pub struct Rectangle {
     /// center
@@ -38,7 +38,7 @@ impl Rectangle {
         self.rotation = deg;
     }
 
-    pub fn vertices(&self) -> [VX2; 4] {
+    pub fn vertices_arr(&self) -> [VX2; 4] {
         let width_offset = self.size.x * 0.5;
         let height_offset = self.size.y * 0.5;
         let tl = vx2!(-width_offset, height_offset);
@@ -60,7 +60,7 @@ impl Rectangle {
 }
 impl Render for Rectangle {
     fn draw(&self, renderer: &mut Renderer) {
-        let [tl, tr, br, bl] = self.vertices();
+        let [tl, tr, br, bl] = self.vertices_arr();
         bresenham(renderer.buffer_mut(), &tl, &tr, self.stroke.into());
         bresenham(renderer.buffer_mut(), &tr, &br, self.stroke.into());
         bresenham(renderer.buffer_mut(), &br, &bl, self.stroke.into());
@@ -68,9 +68,32 @@ impl Render for Rectangle {
     }
 
     fn fill(&self, renderer: &mut Renderer) {
-        let [tl, tr, br, bl] = self.vertices();
+        let [tl, tr, br, bl] = self.vertices_arr();
         Tri2d::new(tl, tr, bl).fill(renderer);
         Tri2d::new(bl, tr, br).fill(renderer);
+    }
+    fn draw_clr<C: Into<u32> + Copy>(&self, renderer: &mut Renderer, c: C) {
         
+        let [tl, tr, br, bl] = self.vertices_arr();
+        bresenham(renderer.buffer_mut(), &tl, &tr, c.into());
+        bresenham(renderer.buffer_mut(), &tr, &br, c.into());
+        bresenham(renderer.buffer_mut(), &br, &bl, c.into());
+        bresenham(renderer.buffer_mut(), &bl, &tl, c.into());
+    }
+
+
+}
+
+
+impl Vertices for Rectangle {
+    fn vertices(&self) -> Vec<VX2> {
+        self.vertices_arr().to_vec()
     }
 }
+impl Vertices for &Rectangle {
+    fn vertices(&self) -> Vec<VX2> {
+        self.vertices_arr().to_vec()
+    }
+}
+
+impl Collision for Rectangle {}

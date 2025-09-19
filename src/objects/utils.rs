@@ -1,4 +1,4 @@
-use crate::linal::vx2::VX2;
+use crate::linal::vertx2::VX2;
 
 pub fn top_left_line(p1: &mut VX2, p2: &mut VX2) {
     if p1.x > p2.x {

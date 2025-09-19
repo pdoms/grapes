@@ -3,10 +3,10 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssi
 #[macro_export]
 macro_rules! vx2 {
     ($v:expr) => {
-        $crate::linal::vx2::VX2::new($v, $v)
+        $crate::linal::vertx2::VX2::new($v, $v)
     };
     ($x:expr, $y:expr) => {
-        $crate::linal::vx2::VX2::new($x, $y)
+        $crate::linal::vertx2::VX2::new($x, $y)
     };
 }
 
@@ -27,7 +27,7 @@ impl VX2 {
         Self { x, y }
     }
     pub fn dot(&self, other: &Self) -> f32 {
-        self.x * other.x + self.y + self.y
+        self.x * other.x + self.y * other.y
     }
 
     pub fn length(&self) -> f32 {
@@ -163,6 +163,13 @@ impl DivAssign<f32> for VX2 {
 }
 
 impl Neg for VX2 {
+    type Output = VX2;
+
+    fn neg(self) -> Self::Output {
+        vx2!(-self.x, -self.y)
+    }
+}
+impl Neg for &VX2 {
     type Output = VX2;
 
     fn neg(self) -> Self::Output {

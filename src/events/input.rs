@@ -1,4 +1,4 @@
-use crate::{internal::window::Window, linal::vx2::VX2, vx2};
+use crate::{internal::window::Window, linal::vertx2::VX2, vx2};
 
 use super::{keyboard::K, mouse::MouseButton};
 

@@ -1,2 +1,2 @@
-pub mod vx2;
+pub mod vertx2;
 

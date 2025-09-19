@@ -2,7 +2,7 @@ use crate::{
     buffer::Buffer,
     colors::color::Color,
     constants::DEFAULT_FOREGROUND,
-    linal::vx2::VX2,
+    linal::vertx2::VX2,
     renderer::two_d::{Render, Renderer},
     vx2,
 };

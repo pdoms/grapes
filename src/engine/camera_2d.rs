@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::linal::vx2::VX2;
+use crate::linal::vertx2::VX2;
 use crate::vx2;
 
 pub type Camera2dRef = Rc<RefCell<Camera2d>>;

@@ -2,14 +2,14 @@ use crate::{
     buffer::Buffer,
     colors::color::Color,
     constants::DEFAULT_FOREGROUND,
-    linal::vx2::VX2,
+    linal::vertx2::VX2,
     max, min,
     objects::line::bresenham,
     renderer::two_d::{Render, Renderer},
     vx2,
 };
 
-use super::utils::{BBox2d, Bounds, edge_2d};
+use super::{utils::{edge_2d, BBox2d, Bounds}, Collision, Vertices};
 
 #[derive(Debug)]
 pub struct Tri2d {
@@ -147,3 +147,11 @@ pub fn fill_tri2d<C: Into<u32> + Copy>(buffer: &mut Buffer<u32>, tri: &Tri2d, c:
         }
     }
 }
+
+impl Vertices for Tri2d {
+    fn vertices(&self) -> Vec<VX2> {
+        vec![self.p0, self.p1, self.p2]
+    }
+}
+
+impl Collision for Tri2d {}

@@ -1,12 +1,11 @@
 use crate::{
     buffer::Buffer,
     colors::color::Color,
-    linal::vx2::VX2,
-    renderer::two_d::{Render, Renderer},
-    vx2,
+    linal::vertx2::VX2,
+    renderer::two_d::{Render, Renderer}, vx2,
 };
 
-use super::utils::top_left_line;
+use super::{utils::top_left_line, Collision, Vertices};
 
 #[derive(Clone, Debug)]
 pub struct Line2d {
@@ -140,3 +139,12 @@ pub fn bresenham(buffer: &mut Buffer<u32>, p1: &VX2, p2: &VX2, clr: u32) {
         }
     }
 }
+
+
+
+impl Vertices for Line2d {
+    fn vertices(&self) -> Vec<VX2> {
+        vec![self.p1, self.p2]
+    }
+}
+impl Collision for Line2d {}
