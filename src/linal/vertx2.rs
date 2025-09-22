@@ -11,6 +11,7 @@ macro_rules! vx2 {
 }
 
 #[derive(Debug, Clone, Copy)]
+#[repr(C)]
 pub struct VX2 {
     pub x: f32,
     pub y: f32,
@@ -174,5 +175,11 @@ impl Neg for &VX2 {
 
     fn neg(self) -> Self::Output {
         vx2!(-self.x, -self.y)
+    }
+}
+
+impl From<&[f32]> for VX2 {
+    fn from(value: &[f32]) -> Self {
+        vx2!(value[0], value[1])
     }
 }

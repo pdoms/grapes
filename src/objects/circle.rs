@@ -7,6 +7,8 @@ use crate::{
     vx2,
 };
 
+use super::{Collision, SupportV, Vertices, collision::gjk::furthest_circle};
+
 pub struct Circle {
     pub pos: VX2,
     pub r: f32,
@@ -34,6 +36,9 @@ impl Circle {
 impl Render for Circle {
     fn draw(&self, renderer: &mut Renderer) {
         mid_point_circle(renderer.buffer_mut(), self, self.stroke);
+    }
+    fn draw_clr<C: Into<u32> + Copy>(&self, renderer: &mut Renderer, c: C) {
+        mid_point_circle(renderer.buffer_mut(), self, c.into());
     }
 
     fn fill(&self, renderer: &mut Renderer) {
@@ -102,3 +107,31 @@ pub fn fill_circle_brute_force<C: Into<Color> + Copy>(
         }
     }
 }
+
+impl Vertices for Circle {
+    fn vertices(&self) -> Vec<VX2> {
+        vec![self.pos]
+    }
+}
+
+impl SupportV for Circle {
+    fn support(&self, dir: &VX2) -> VX2 {
+        furthest_circle(&self.pos, self.r, dir)
+    }
+}
+
+impl Collision for Circle {}
+
+impl Vertices for &Circle {
+    fn vertices(&self) -> Vec<VX2> {
+        vec![self.pos]
+    }
+}
+
+impl SupportV for &Circle {
+    fn support(&self, dir: &VX2) -> VX2 {
+        furthest_circle(&self.pos, self.r, dir)
+    }
+}
+
+impl Collision for &Circle {}

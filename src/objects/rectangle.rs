@@ -6,7 +6,9 @@ use crate::{
     vx2,
 };
 
-use super::{line::bresenham, tri::Tri2d, Collision, Vertices};
+use super::{
+    Collision, SupportV, Vertices, collision::gjk::furthest_polygon, line::bresenham, tri::Tri2d,
+};
 
 pub struct Rectangle {
     /// center
@@ -73,17 +75,13 @@ impl Render for Rectangle {
         Tri2d::new(bl, tr, br).fill(renderer);
     }
     fn draw_clr<C: Into<u32> + Copy>(&self, renderer: &mut Renderer, c: C) {
-        
         let [tl, tr, br, bl] = self.vertices_arr();
         bresenham(renderer.buffer_mut(), &tl, &tr, c.into());
         bresenham(renderer.buffer_mut(), &tr, &br, c.into());
         bresenham(renderer.buffer_mut(), &br, &bl, c.into());
         bresenham(renderer.buffer_mut(), &bl, &tl, c.into());
     }
-
-
 }
-
 
 impl Vertices for Rectangle {
     fn vertices(&self) -> Vec<VX2> {
@@ -96,4 +94,20 @@ impl Vertices for &Rectangle {
     }
 }
 
+impl SupportV for Rectangle {
+    fn support(&self, dir: &VX2) -> VX2 {
+        let verts = self.vertices_arr();
+        let idx = furthest_polygon(&verts, dir);
+        verts[idx]
+    }
+}
+impl SupportV for &Rectangle {
+    fn support(&self, dir: &VX2) -> VX2 {
+        let verts = self.vertices_arr();
+        let idx = furthest_polygon(&verts, dir);
+        verts[idx]
+    }
+}
+
 impl Collision for Rectangle {}
+impl Collision for &Rectangle {}

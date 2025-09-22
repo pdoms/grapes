@@ -9,7 +9,7 @@ use crate::{
     vx2,
 };
 
-use super::{utils::{edge_2d, BBox2d, Bounds}, Collision, Vertices};
+use super::{collision::gjk::furthest_polygon, utils::{edge_2d, BBox2d, Bounds}, Collision, SupportV, Vertices};
 
 #[derive(Debug)]
 pub struct Tri2d {
@@ -154,4 +154,28 @@ impl Vertices for Tri2d {
     }
 }
 
+impl SupportV for Tri2d {
+    fn support(&self, dir: &VX2) -> VX2 {
+        let verts = self.vertices();
+        let idx = furthest_polygon(&verts, dir);
+        verts[idx]
+    }
+}
+
 impl Collision for Tri2d {}
+
+impl Vertices for &Tri2d {
+    fn vertices(&self) -> Vec<VX2> {
+        vec![self.p0, self.p1, self.p2]
+    }
+}
+
+impl SupportV for &Tri2d {
+    fn support(&self, dir: &VX2) -> VX2 {
+        let verts = self.vertices();
+        let idx = furthest_polygon(&verts, dir);
+        verts[idx]
+    }
+}
+
+impl Collision for &Tri2d {}

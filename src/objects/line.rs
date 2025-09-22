@@ -2,10 +2,13 @@ use crate::{
     buffer::Buffer,
     colors::color::Color,
     linal::vertx2::VX2,
-    renderer::two_d::{Render, Renderer}, vx2,
+    renderer::two_d::{Render, Renderer},
+    vx2,
 };
 
-use super::{utils::top_left_line, Collision, Vertices};
+use super::{
+    Collision, SupportV, Vertices, collision::gjk::furthest_polygon, utils::top_left_line,
+};
 
 #[derive(Clone, Debug)]
 pub struct Line2d {
@@ -140,11 +143,32 @@ pub fn bresenham(buffer: &mut Buffer<u32>, p1: &VX2, p2: &VX2, clr: u32) {
     }
 }
 
-
-
 impl Vertices for Line2d {
     fn vertices(&self) -> Vec<VX2> {
         vec![self.p1, self.p2]
     }
 }
+
+impl SupportV for Line2d {
+    fn support(&self, dir: &VX2) -> VX2 {
+        let verts = self.vertices();
+        let idx = furthest_polygon(&verts, dir);
+        verts[idx]
+    }
+}
 impl Collision for Line2d {}
+
+impl Vertices for &Line2d {
+    fn vertices(&self) -> Vec<VX2> {
+        vec![self.p1, self.p2]
+    }
+}
+
+impl SupportV for &Line2d {
+    fn support(&self, dir: &VX2) -> VX2 {
+        let verts = self.vertices();
+        let idx = furthest_polygon(&verts, dir);
+        verts[idx]
+    }
+}
+impl Collision for &Line2d {}

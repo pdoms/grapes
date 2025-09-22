@@ -13,13 +13,15 @@ pub trait Vertices {
     fn vertices(&self) -> Vec<VX2>;
 }
 
+pub trait SupportV {
+    fn support(&self, dir: &VX2) -> VX2;
+}
+
 pub trait Collision
 where
-    Self: Vertices,
+    Self: Sized + Vertices + SupportV,
 {
-    fn collides<V: Vertices>(&self, with: V) -> bool {
-        let verts1 = self.vertices();
-        let verts2 = with.vertices();
-        gjk(&verts1, &verts2)
+    fn collides<O: Vertices + SupportV + Sized>(&self, with: &O) -> bool {
+        gjk(self, with)
     }
 }
