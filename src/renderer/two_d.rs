@@ -1,6 +1,6 @@
 use std::u32;
 
-use crate::{buffer::Buffer, colors::color::Color, constants::DEFAULT_FOREGROUND};
+use crate::{buffer::Buffer, colors::color::Color, constants::DEFAULT_FOREGROUND, textures::Texture};
 
 pub trait Render {
     fn draw(&self, _renderer: &mut Renderer) {
@@ -21,6 +21,9 @@ pub trait Render {
     fn fill_clr<C: Into<u32> + Copy>(&self, _renderer: &mut Renderer, _c: C) {
         unimplemented!("Default unimplemented for fill_clr");
     }
+    fn with_texture(&self, _renderer: &mut Renderer, _texture: &Texture) {
+        unimplemented!("Default unimplemented for texure");
+    } 
 }
 
 pub struct Renderer {

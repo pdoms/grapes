@@ -1,5 +1,6 @@
 use std::alloc::Layout;
 
+#[derive(Clone)]
 pub struct Buffer<T: Copy + Default> {
     data: *mut T,
     width: i32,
@@ -16,7 +17,7 @@ impl<T: Copy + Default + Sized> Buffer<T> {
         let cap = (w * h) as usize;
         let layout = Layout::array::<T>(cap).expect("Layout to be buildable");
         // SECURITY: we checked type size and array len
-        let data = unsafe { std::alloc::alloc(layout) as *mut T };
+        let data = unsafe { std::alloc::alloc_zeroed(layout) as *mut T };
         Self {
             data,
             width: w,
@@ -24,6 +25,38 @@ impl<T: Copy + Default + Sized> Buffer<T> {
             cap,
         }
     }
+
+    pub fn init_with_value(w: i32, h: i32, v: T) -> Self {
+        if std::mem::size_of::<T>() == 0 || w * h == 0 {
+            panic!("We cannot allocate zero sized buffers");
+        }
+
+        let cap = (w * h) as usize;
+        let layout = Layout::array::<T>(cap).expect("Layout to be buildable");
+        // SECURITY: we checked type size and array len
+        let data = unsafe {
+            let data = std::alloc::alloc(layout) as *mut T;
+            for i in 0..w * h {
+                data.add(i as usize).write(v)
+            }
+            data
+        };
+
+        Self {
+            data,
+            width: w,
+            height: h,
+            cap,
+        }
+    }
+
+
+    pub fn fill(&mut self, v: T) {
+        for i in 0..(self.width*self.height) {
+            self.set(i, v);
+        }
+    }
+
     pub fn as_slice<'b>(&'b self) -> &'b [T] {
         unsafe { std::slice::from_raw_parts(self.data, self.width as usize * self.height as usize) }
     }
@@ -43,6 +76,12 @@ impl<T: Copy + Default + Sized> Buffer<T> {
             self.data.add(index as usize).write(value);
         }
     }
+
+    pub fn get_ptr(&self) -> *const T {
+        self.data as *const T
+    }
+
+
     pub fn set_xy(&mut self, x: i32, y: i32, value: T) {
         if x >= self.width || x < 0 || y < 0 || y >= self.height {
             return;
@@ -50,6 +89,22 @@ impl<T: Copy + Default + Sized> Buffer<T> {
         let index = y * self.width + x;
         self.set(index, value);
     }
+
+    pub fn get(&mut self, index: i32) -> Option<*mut T> {
+        if index > self.len() || index < 0 {
+            return None;
+        }
+        unsafe { Some(self.data.add(index as usize)) }
+    }
+
+    pub fn get_xy(&mut self, x: i32, y: i32) -> Option<*mut T> {
+        if x >= self.width || x < 0 || y < 0 || y >= self.height {
+            return None;
+        }
+        let index = y * self.width + x;
+        self.get(index)
+    }
+
     pub fn offset(&mut self, index: i32) -> *mut T {
         if index > self.len() || index < 0 {
             panic!("Out of Bounds!!");

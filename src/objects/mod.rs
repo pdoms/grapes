@@ -1,4 +1,4 @@
-use collision::gjk::gjk;
+use collision::{epa::EpaResult, gjk::gjk};
 
 use crate::linal::vertx2::VX2;
 
@@ -24,4 +24,5 @@ where
     fn collides<O: Vertices + SupportV + Sized>(&self, with: &O) -> bool {
         gjk(self, with)
     }
+    fn collides_epa<O: Vertices + SupportV + Sized>(&self, with: &O) -> Option<EpaResult>;
 }

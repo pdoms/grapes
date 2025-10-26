@@ -4,7 +4,7 @@ pub enum ColorU32 {
     Argb(u32),
 }
 
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Default, Debug, PartialEq, Clone, Copy)]
 pub struct Color {
     r: u8,
     g: u8,
@@ -65,6 +65,12 @@ impl Color {
         }
     }
 
+    pub fn saturation(&mut self, factor: f32) {
+        self.r = (self.r as f32 * factor).clamp(0.0, 255.0) as u8;
+        self.g = (self.g as f32 * factor).clamp(0.0, 255.0) as u8;
+        self.b = (self.b as f32 * factor).clamp(0.0, 255.0) as u8;
+    }
+
     pub fn shade(&self, lum: f32) -> Self {
         Self {
             r: (self.r as f32 * (1.0 - lum)) as u8,
@@ -74,11 +80,12 @@ impl Color {
         }
     }
     pub fn lerp(start: &Self, end: &Self, t: f32) -> Self {
+        let t = t.clamp(0.0, 1.0);
         Color {
-            r: (start.r as f32 * (1.0 - t) + end.r as f32 * t) as u8,
-            g: (start.g as f32 * (1.0 - t) + end.g as f32 * t) as u8,
-            b: (start.b as f32 * (1.0 - t) + end.b as f32 * t) as u8,
-            a: 0xFF,
+            r: (start.r as f32 * (1.0 - t) + end.r as f32 * t).round().clamp(0.0, 255.0) as u8,
+            g: (start.g as f32 * (1.0 - t) + end.g as f32 * t).round().clamp(0.0, 255.0) as u8,
+            b: (start.b as f32 * (1.0 - t) + end.b as f32 * t).round().clamp(0.0, 255.0) as u8,
+            a: (start.a as f32 * (1.0 - t) + end.a as f32 * t).round().clamp(0.0, 255.0) as u8,
         }
     }
 }

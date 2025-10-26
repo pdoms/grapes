@@ -1,3 +1,5 @@
+use crate::{linal::vertx2::VX2, vx2};
+
 const FULL_CIRCLE_DEG: f32 = 360.0;
 
 #[macro_export]
@@ -19,6 +21,10 @@ pub fn wrap_degrees_360(angle: f32) -> f32 {
 
 pub fn lerp(a: f32, b: f32, t: f32) -> f32 {
     a + (b - a) * t
+}
+
+pub fn lerp_vx2(a: &VX2, b: &VX2, t: f32) -> VX2 {
+    vx2!(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t)
 }
 
 #[cfg(test)]

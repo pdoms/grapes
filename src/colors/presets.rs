@@ -20,6 +20,7 @@ pub enum GrapesColors {
     GrapesBlue = 0x272FA3FF,
     Purple = 0x5F1D99FF,
     Teal = 0x008080FF,
+    Maroon = 0x550000FF,
     Orange = 0xCF8608FF,
     Yellow = 0xD4C222FF,
     Transparent = 0,

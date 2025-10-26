@@ -7,7 +7,12 @@ use crate::{
 };
 
 use super::{
-    Collision, SupportV, Vertices, collision::gjk::furthest_polygon, utils::top_left_line,
+    Collision, SupportV, Vertices,
+    collision::{
+        epa::{EpaResult, epa},
+        gjk::{furthest_polygon, gjk_for_epa},
+    },
+    utils::top_left_line,
 };
 
 #[derive(Clone, Debug)]
@@ -156,7 +161,20 @@ impl SupportV for Line2d {
         verts[idx]
     }
 }
-impl Collision for Line2d {}
+impl Collision for Line2d {
+    fn collides_epa<O: Vertices + SupportV + Sized>(&self, with: &O) -> Option<EpaResult> {
+        if let Some(simplex) = gjk_for_epa(self, with) {
+            let verts_self = self.vertices();
+            let verts_with = with.vertices();
+            return epa(
+                simplex,
+                |dir: &VX2| verts_self[furthest_polygon(&verts_self, dir)],
+                |dir: &VX2| verts_with[furthest_polygon(&verts_with, dir)],
+            );
+        }
+        return None;
+    }
+}
 
 impl Vertices for &Line2d {
     fn vertices(&self) -> Vec<VX2> {
@@ -171,4 +189,17 @@ impl SupportV for &Line2d {
         verts[idx]
     }
 }
-impl Collision for &Line2d {}
+impl Collision for &Line2d {
+    fn collides_epa<O: Vertices + SupportV + Sized>(&self, with: &O) -> Option<EpaResult> {
+        if let Some(simplex) = gjk_for_epa(self, with) {
+            let verts_self = self.vertices();
+            let verts_with = with.vertices();
+            return epa(
+                simplex,
+                |dir: &VX2| verts_self[furthest_polygon(&verts_self, dir)],
+                |dir: &VX2| verts_with[furthest_polygon(&verts_with, dir)],
+            );
+        }
+        return None;
+    }
+}

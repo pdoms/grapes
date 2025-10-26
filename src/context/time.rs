@@ -9,6 +9,7 @@ pub struct TimeInfo {
     delta_time: Duration,
     average: Duration,
     fps: u64,
+    ticks: u64,
 }
 
 impl TimeInfo {
@@ -22,8 +23,10 @@ impl TimeInfo {
             average: Duration::new(0, 0),
             second_start: Instant::now(),
             fps,
+            ticks: 0,
         }
     }
+
     pub fn start(&mut self) {
         self.prev_time = Instant::now();
         self.second_start = Instant::now();
@@ -45,6 +48,7 @@ impl TimeInfo {
     }
 
     pub fn update(&mut self) -> bool {
+        self.ticks = self.ticks.wrapping_add(1);
         let mut scnd = false;
         self.delta_time = self.prev_time.elapsed();
         self.prev_time = Instant::now();

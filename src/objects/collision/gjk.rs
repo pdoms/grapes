@@ -6,6 +6,8 @@ use crate::{
     vx2,
 };
 
+use super::epa::EpaVertex;
+
 fn triple_prod(a: &VX2, b: &VX2, c: &VX2) -> VX2 {
     let cross_ab = a.x * b.y - a.y * b.x;
     vx2!(-c.y * cross_ab, c.x * cross_ab)
@@ -143,6 +145,95 @@ pub fn gjk<A: Sized + Vertices + SupportV, B: Sized + Vertices + SupportV>(
         simplex.push(new_point);
         if handle_simplex(&mut simplex, &mut dir) {
             return true;
+        }
+    }
+}
+
+fn handle_simplex_vertices(simplex: &mut Vec<EpaVertex>, dir: &mut VX2) -> bool {
+    if simplex.len() == 2 {
+        let a = simplex[1].v;
+        let b = simplex[0].v;
+        let ao = -a;
+        let ab = b - &a;
+
+        let dir_v = perpendicular_toward_origin(&ab, &ao);
+        dir.x = dir_v.x;
+        dir.y = dir_v.y;
+        false
+    } else if simplex.len() == 3 {
+        let a = simplex[2].v;
+        let b = simplex[1].v;
+        let c = simplex[0].v;
+        let ao = -a;
+        let ab = b - &a;
+        let ac = c - &a;
+
+        let perp_ab = triple_prod(&ac, &ab, &ab);
+        let perp_ac = triple_prod(&ab, &ac, &ac);
+
+        if perp_ab.dot(&ao) > 0.0 {
+            simplex.remove(0);
+            dir.x = perp_ab.x;
+            dir.y = perp_ab.y;
+            return false;
+        }
+
+        if perp_ac.dot(&ao) > 0.0 {
+            simplex.remove(1);
+            dir.x = perp_ac.x;
+            dir.y = perp_ac.y;
+            return false;
+        }
+        true
+    } else {
+        unreachable!()
+    }
+}
+
+
+pub fn gjk_for_epa<A: Sized + Vertices + SupportV, B: Sized + Vertices + SupportV>(
+    obj_1: &A,
+    obj_2: &B,
+) -> Option<Vec<EpaVertex>> {
+    let verts1 = obj_1.vertices();
+    let verts2 = obj_2.vertices();
+
+    let mut dir = average_point(&verts1) - &average_point(&verts2);
+    let mut simplex = Vec::with_capacity(3);
+
+    if dir.x == 0.0 && dir.y == 0.0 {
+        dir = vx2!(1.0, 0.0);
+    }
+    let supp: EpaVertex = {
+        let p1 = obj_1.support(&dir);
+        let p2 = obj_2.support(&-dir);
+        EpaVertex {
+            v: p1 - &p2,
+            a: p1,
+            b: p2,
+        }
+    };
+
+    simplex.push(supp);
+    dir = -simplex[0].v;
+    let mut new_point: EpaVertex;
+
+    loop {
+        new_point = {
+            let p1 = obj_1.support(&dir);
+            let p2 = obj_2.support(&-dir);
+            EpaVertex {
+                v: p1 - &p2,
+                a: p1,
+                b: p2,
+            }
+        };
+        if new_point.v.dot(&dir) <= 0.0 {
+            return None;
+        }
+        simplex.push(new_point);
+        if handle_simplex_vertices(&mut simplex, &mut dir) {
+            return Some(simplex);
         }
     }
 }

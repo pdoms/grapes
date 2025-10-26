@@ -4,7 +4,7 @@ use crate::{
 };
 
 pub trait State {
-    fn user_init(&mut self, renderer: &mut Renderer, camera: Camera2dRef);
+    fn user_init(renderer: &mut Renderer, camera: Camera2dRef) -> Self;
     fn user_update(
         &mut self,
         renderer: &mut Renderer,

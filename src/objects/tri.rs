@@ -9,7 +9,14 @@ use crate::{
     vx2,
 };
 
-use super::{collision::gjk::furthest_polygon, utils::{edge_2d, BBox2d, Bounds}, Collision, SupportV, Vertices};
+use super::{
+    Collision, SupportV, Vertices,
+    collision::{
+        epa::{EpaResult, epa},
+        gjk::{furthest_polygon, gjk_for_epa},
+    },
+    utils::{BBox2d, Bounds, edge_2d},
+};
 
 #[derive(Debug)]
 pub struct Tri2d {
@@ -110,7 +117,7 @@ impl Render for Tri2d {
         bresenham(&mut renderer.buffer_mut(), &self.p1, &self.p2, c.into());
     }
     fn fill_clr<C: Into<u32> + Copy>(&self, renderer: &mut Renderer, c: C) {
-        unimplemented!("Default unimplemented for fill_clr");
+        fill_tri2d(&mut renderer.buffer_mut(), self, c);
     }
 }
 
@@ -162,7 +169,20 @@ impl SupportV for Tri2d {
     }
 }
 
-impl Collision for Tri2d {}
+impl Collision for Tri2d {
+    fn collides_epa<O: Vertices + SupportV + Sized>(&self, with: &O) -> Option<EpaResult> {
+        if let Some(simplex) = gjk_for_epa(self, with) {
+            let verts_self = self.vertices();
+            let verts_with = with.vertices();
+            return epa(
+                simplex,
+                |dir: &VX2| verts_self[furthest_polygon(&verts_self, dir)],
+                |dir: &VX2| verts_with[furthest_polygon(&verts_with, dir)],
+            );
+        }
+        return None;
+    }
+}
 
 impl Vertices for &Tri2d {
     fn vertices(&self) -> Vec<VX2> {
@@ -178,4 +198,17 @@ impl SupportV for &Tri2d {
     }
 }
 
-impl Collision for &Tri2d {}
+impl Collision for &Tri2d {
+    fn collides_epa<O: Vertices + SupportV + Sized>(&self, with: &O) -> Option<EpaResult> {
+        if let Some(simplex) = gjk_for_epa(self, with) {
+            let verts_self = self.vertices();
+            let verts_with = with.vertices();
+            return epa(
+                simplex,
+                |dir: &VX2| verts_self[furthest_polygon(&verts_self, dir)],
+                |dir: &VX2| verts_with[furthest_polygon(&verts_with, dir)],
+            );
+        }
+        return None;
+    }
+}

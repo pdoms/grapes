@@ -22,13 +22,12 @@ impl<S: State> Engine<S> {
         title: &str,
         width: usize,
         height: usize,
-        mut state: S,
         camera: Camera2dRef,
     ) -> ResultGrapes<Self> {
         let w = Window::new(title, width, height)
             .map_err(|err| <ErrorX as Into<GrapesError>>::into(err))?;
         let mut renderer = Renderer::new(width, height);
-        state.user_init(&mut renderer, camera.clone());
+        let state = S::user_init(&mut renderer, camera.clone());
         let target_fps = w.get_fps();
         Ok(Self {
             w,

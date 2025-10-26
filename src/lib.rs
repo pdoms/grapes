@@ -11,3 +11,5 @@ pub mod objects;
 pub mod renderer;
 pub mod state;
 pub mod utils;
+pub mod fonts;
+pub mod textures;

@@ -11,6 +11,19 @@ pub trait BBox2d {
     fn bbox(&self) -> Bounds;
 }
 
+pub fn min_of_n(d: &[f32]) -> Option<f32> {
+    d.iter().fold(None, |min, x| match min {
+        None => Some(*x),
+        Some(y) => Some(if &x < &&y { *x } else { y }),
+    })
+}
+pub fn max_of_n(d: &[f32]) -> Option<f32> {
+    d.iter().fold(None, |max, x| match max {
+        None => Some(*x),
+        Some(y) => Some(if &x > &&y { *x } else { y }),
+    })
+}
+
 pub struct Bounds {
     pub min_x: f32,
     pub max_x: f32,

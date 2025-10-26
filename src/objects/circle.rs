@@ -7,8 +7,15 @@ use crate::{
     vx2,
 };
 
-use super::{Collision, SupportV, Vertices, collision::gjk::furthest_circle};
+use super::{
+    Collision, SupportV, Vertices,
+    collision::{
+        epa::epa,
+        gjk::{furthest_circle, furthest_polygon, gjk_for_epa},
+    },
+};
 
+#[derive(Clone, Copy)]
 pub struct Circle {
     pub pos: VX2,
     pub r: f32,
@@ -120,7 +127,24 @@ impl SupportV for Circle {
     }
 }
 
-impl Collision for Circle {}
+impl Collision for Circle {
+    fn collides_epa<O: Vertices + SupportV + Sized>(
+        &self,
+        with: &O,
+    ) -> Option<super::collision::epa::EpaResult> {
+        if let Some(simplex) = gjk_for_epa(self, with) {
+            return epa(
+                simplex,
+                |dir: &VX2| furthest_circle(&self.pos, self.r, dir),
+                |dir: &VX2| {
+                    let verts = with.vertices();
+                    verts[furthest_polygon(&verts, dir)]
+                },
+            );
+        }
+        return None;
+    }
+}
 
 impl Vertices for &Circle {
     fn vertices(&self) -> Vec<VX2> {
@@ -134,4 +158,21 @@ impl SupportV for &Circle {
     }
 }
 
-impl Collision for &Circle {}
+impl Collision for &Circle {
+    fn collides_epa<O: Vertices + SupportV + Sized>(
+        &self,
+        with: &O,
+    ) -> Option<super::collision::epa::EpaResult> {
+        if let Some(simplex) = gjk_for_epa(self, with) {
+            return epa(
+                simplex,
+                |dir: &VX2| furthest_circle(&self.pos, self.r, dir),
+                |dir: &VX2| {
+                    let verts = with.vertices();
+                    verts[furthest_polygon(&verts, dir)]
+                },
+            );
+        }
+        return None;
+    }
+}
